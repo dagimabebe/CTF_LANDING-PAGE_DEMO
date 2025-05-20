@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberHack CTF | Ethical Hacking Challenge</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon-blue: #3b82f6;
+            --neon-red: #ef4444;
+            --neon-pink: #ec4899;
+            --neon-purple: #8b5cf6;
+        }
+        
+        body {
+            font-family: 'Share Tech Mono', monospace;
+            background-color: #0a0a0a;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+        
+        .hero-title {
+            font-family: 'Orbitron', sans-serif;
+            text-shadow: 0 0 10px var(--neon-blue), 0 0 20px var(--neon-blue);
+            animation: pulse 2s infinite alternate;
+        }
+        
+        .code-rain {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><text x="0" y="10" font-family="monospace" font-size="10" fill="rgba(59,130,246,0.3)">0 1 0 1 1 0 1 0 0 1</text></svg>');
+            opacity: 0.3;
+            z-index: 0;
+        }
+        
+        .glow-input {
+            box-shadow: 0 0 5px var(--neon-blue), 0 0 10px var(--neon-blue) inset;
+            background-color: rgba(15, 23, 42, 0.7);
+            transition: all 0.3s ease;
+        }
+        
+        .glow-input:focus {
+            box-shadow: 0 0 10px var(--neon-blue), 0 0 15px var(--neon-blue) inset;
+        }
+        
+        .glow-input-error {
+            box-shadow: 0 0 5px var(--neon-red), 0 0 10px var(--neon-red) inset;
+        }
+        
+        .glow-red {
+            box-shadow: 0 0 10px var(--neon-red);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .glow-red:hover {
+            box-shadow: 0 0 15px var(--neon-red);
+            animation: flicker 0.5s infinite alternate;
+        }
+        
+        .glow-blue {
+            box-shadow: 0 0 10px var(--neon-blue);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .glow-blue:hover {
+            box-shadow: 0 0 15px var(--neon-blue);
+            animation: flicker 0.5s infinite alternate;
+        }
+        
+        .glow-purple {
+            box-shadow: 0 0 10px var(--neon-purple);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .glow-purple:hover {
+            box-shadow: 0 0 15px var(--neon-purple);
+            animation: flicker 0.5s infinite alternate;
+        }
+        
+        .challenge-card {
+            transform-style: preserve-3d;
+            transition: all 0.5s ease;
+        }
+        
+        .challenge-card:hover {
+            transform: translateY(-10px) rotateX(5deg) rotateY(5deg);
+            box-shadow: 0 20px 30px rgba(59, 130, 246, 0.3);
+        }
+        
+        .terminal-effect {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .terminal-effect::after {
+            content: ">";
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--neon-blue);
+            animation: blink 1s infinite;
+        }
+        
+        .leaderboard-item {
+            border-left: 3px solid var(--neon-blue);
+            transition: all 0.3s ease;
+        }
+        
+        .leaderboard-item:hover {
+            background-color: rgba(59, 130, 246, 0.1);
+        }
+        
+        .progress-bar {
+            height: 4px;
+            background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
+        }
+        
+        .typing-text {
+            border-right: 3px solid var(--neon-blue);
+            white-space: nowrap;
+            overflow: hidden;
+        }
+        
+        .typing-animation {
+            animation: typing 3s steps(40) 1s 1 normal both, blink-caret 0.75s step-end infinite;
+        }
+        
+        .rank-badge {
+            width: 24px;
+            height: 24px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .rank-1 {
+            background-color: gold;
+            color: black;
+        }
+        
+        .rank-2 {
+            background-color: silver;
+            color: black;
+        }
+        
+        .rank-3 {
+            background-color: #cd7f32;
+            color: black;
+        }
+        
+        .rank-4 {
+            background-color: var(--neon-blue);
+            color: white;
+        }
+        
+        .rank-5 {
+            background-color: var(--neon-purple);
+            color: white;
+        }
+        
+        .announcement-feed {
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            background-color: rgba(15, 23, 42, 0.5);
+            height: 200px;
+            overflow-y: auto;
+        }
+        
+        .announcement-item {
+            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+            padding: 10px;
+        }
+        
+        .announcement-item:last-child {
+            border-bottom: none;
+        }
+        
+        .social-icon {
+            transition: all 0.3s ease;
+        }
+        
+        .social-icon:hover {
+            transform: translateY(-3px);
+            filter: drop-shadow(0 0 5px var(--neon-blue));
+        }
+        
+        @keyframes pulse {
+            0% { text-shadow: 0 0 10px var(--neon-blue), 0 0 20px var(--neon-blue); }
+            100% { text-shadow: 0 0 15px var(--neon-blue), 0 0 30px var(--neon-blue), 0 0 40px var(--neon-blue); }
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+        
+        @keyframes flicker {
+            0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+                box-shadow: 0 0 10px currentColor;
+            }
+            20%, 24%, 55% {
+                box-shadow: none;
+            }
+        }
+        
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: var(--neon-blue) }
+        }
+        
+        @keyframes slideInUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        
+        .animate-slide-in-up {
+            animation: slideInUp 0.8s ease-out forwards;
+        }
+        
+        .animate-fade-in {
+            animation: fadeIn 1s ease-out forwards;
+        }
+        
+        .delay-100 {
+            animation-delay: 0.1s;
+        }
+        
+        .delay-200 {
+            animation-delay: 0.2s;
+        }
+        
+        .delay-300 {
+            animation-delay: 0.3s;
+        }
+        
+        .delay-400 {
+            animation-delay: 0.4s;
+        }
+        
+        .delay-500 {
+            animation-delay: 0.5s;
+        }
+        
+        .glitch {
+            position: relative;
+        }
+        
+        .glitch::before, .glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.8;
+        }
+        
+        .glitch::before {
+            color: #0ff;
+            z-index: -1;
+            animation: glitch-effect 3s infinite;
+        }
+        
+        .glitch::after {
+            color: #f0f;
+            z-index: -2;
+            animation: glitch-effect 2s infinite reverse;
+        }
+        
+        @keyframes glitch-effect {
+            0% { transform: translate(0); }
+            20% { transform: translate(-3px, 3px); }
+            40% { transform: translate(-3px, -3px); }
+            60% { transform: translate(3px, 3px); }
+            80% { transform: translate(3px, -3px); }
+            100% { transform: translate(0); }
+        }
+        
+        .countdown-digit {
+            background-color: rgba(15, 23, 42, 0.7);
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .countdown-digit::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                to bottom right,
+                rgba(59, 130, 246, 0),
+                rgba(59, 130, 246, 0),
+                rgba(59, 130, 246, 0.3),
+                rgba(59, 130, 246, 0)
+            );
+            transform: rotate(30deg);
+            animation: shine 3s infinite;
+        }
+        
+        @keyframes shine {
+            0% {
+                transform: rotate(30deg) translate(-30%, -30%);
+            }
+            20% {
+                transform: rotate(30deg) translate(30%, 30%);
+            }
+            100% {
+                transform: rotate(30deg) translate(30%, 30%);
+            }
+        }
+        
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal-content {
+            background-color: #111827;
+            border: 1px solid var(--neon-blue);
+            border-radius: 0.5rem;
+            width: 90%;
+            max-width: 500px;
+            transform: scale(0.9);
+            transition: all 0.3s ease;
+            box-shadow: 0 0 20px var(--neon-blue);
+        }
+        
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+        }
+        
+        .captcha-container {
+            background-color: rgba(15, 23, 42, 0.7);
+            border: 1px dashed var(--neon-blue);
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .captcha-text {
+            letter-spacing: 5px;
+            font-weight: bold;
+            color: var(--neon-blue);
+            user-select: none;
+        }
+        
+        .rotate-words {
+            display: inline-block;
+            position: relative;
+            height: 1.5em;
+            overflow: hidden;
+        }
+        
+        .rotate-words span {
+            display: block;
+            position: absolute;
+            white-space: nowrap;
+            left: 0;
+            top: 0;
+            animation: rotate-word 12s linear infinite;
+        }
+        
+        .rotate-words span:nth-child(2) {
+            animation-delay: 3s;
+        }
+        
+        .rotate-words span:nth-child(3) {
+            animation-delay: 6s;
+        }
+        
+        .rotate-words span:nth-child(4) {
+            animation-delay: 9s;
+        }
+        
+        @keyframes rotate-word {
+            0%, 15% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            20%, 35% {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            80%, 100% {
+                transform: translateY(-200%);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <!-- Header / Hero Section -->
+    <header class="relative min-h-screen flex items-center justify-center overflow-hidden">
+        <div class="code-rain"></div>
+        <div class="absolute inset-0 bg-gradient-to-b from-black/80 to-black/30 z-10"></div>
+        
+        <div class="container mx-auto px-6 relative z-20 text-center">
+            <h1 class="hero-title text-5xl md:text-7xl lg:text-8xl font-bold mb-6">
+                <span class="glitch" data-text="CYBERHACK CTF">CYBERHACK CTF</span>
+            </h1>
+            
+            <div class="mb-10">
+                <p class="text-xl md:text-2xl mb-2 text-blue-400 font-mono">Hack the Future.</p>
+                <p class="text-xl md:text-2xl text-blue-400 font-mono">
+                    Master <span class="rotate-words text-red-400">
+                        <span>Web Exploitation</span>
+                        <span>Reverse Engineering</span>
+                        <span>Cryptography</span>
+                        <span>Binary Exploitation</span>
+                    </span>
+                </p>
+            </div>
+            
+            <div class="flex flex-wrap justify-center gap-4">
+                <button id="login-btn" class="glow-blue px-8 py-3 rounded-md bg-blue-900/50 text-white font-bold hover:bg-blue-800 transition-all">
+                    <i class="fas fa-sign-in-alt mr-2"></i> Login
+                </button>
+                <button id="register-btn" class="glow-red px-8 py-3 rounded-md bg-red-900/50 text-white font-bold hover:bg-red-800 transition-all">
+                    <i class="fas fa-user-plus mr-2"></i> Register
+                </button>
+                <button class="glow-purple px-8 py-3 rounded-md bg-purple-900/50 text-white font-bold hover:bg-purple-800 transition-all">
+                    <i class="fas fa-play mr-2"></i> Watch Trailer
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Login/Register Modal -->
+    <div id="auth-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="flex border-b border-gray-800">
+                <button id="modal-login-tab" class="flex-1 py-4 px-6 text-center font-bold text-blue-400 border-b-2 border-blue-400">
+                    <i class="fas fa-sign-in-alt mr-2"></i> Login
+                </button>
+                <button id="modal-register-tab" class="flex-1 py-4 px-6 text-center font-bold text-gray-400 hover:text-white">
+                    <i class="fas fa-user-plus mr-2"></i> Register
+                </button>
+                <button id="close-modal" class="px-4 text-gray-400 hover:text-white">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div id="modal-login-form" class="p-8">
+                <div class="mb-6">
+                    <label class="block text-gray-300 mb-2">Email or Username</label>
+                    <input type="text" class="w-full px-4 py-3 rounded-md glow-input text-white focus:outline-none terminal-effect" placeholder="root@cyberhack">
+                </div>
+                <div class="mb-6">
+                    <label class="block text-gray-300 mb-2">Password</label>
+                    <input type="password" class="w-full px-4 py-3 rounded-md glow-input text-white focus:outline-none terminal-effect" placeholder="••••••••">
+                </div>
+                
+                <div class="flex items-center justify-between mb-6">
+                    <div class="flex items-center">
+                        <input type="checkbox" id="remember" class="mr-2">
+                        <label for="remember" class="text-gray-300">Remember me</label>
+                    </div>
+                    <a href="#" class="text-blue-400 hover:underline">Forgot password?</a>
+                </div>
+                
+                <div class="flex items-center mb-4">
+                    <input type="checkbox" id="enable-2fa" class="mr-2">
+                    <label for="enable-2fa" class="text-gray-300">Enable 2FA</label>
+                </div>
+                
+                <div id="two-fa-fields" class="hidden mb-6">
+                    <label class="block text-gray-300 mb-2">2FA Code</label>
+                    <input type="text" class="w-full px-4 py-3 rounded-md glow-input text-white focus:outline-none terminal-effect" placeholder="123456">
+                </div>
+                
+                <button class="w-full glow-blue py-3 rounded-md bg-blue-900/50 text-white font-bold hover:bg-blue-800 transition-all mb-4">
+                    <i class="fas fa-unlock mr-2"></i> Access Terminal
+                </button>
+                
+                <div class="text-center text-gray-400 mb-4">or connect with</div>
+                <div class="flex justify-center gap-4">
+                    <button class="p-2 rounded-full border border-gray-700 text-gray-300 hover:text-white hover:border-blue-400">
+                        <i class="fab fa-github"></i>
+                    </button>
+                    <button class="p-2 rounded-full border border-gray-700 text-gray-300 hover:text-white hover:border-blue-400">
+                        <i class="fab fa-google"></i>
+                    </button>
+                    <button class="p-2 rounded-full border border-gray-700 text-gray-300 hover:text-white hover:border-blue-400">
+                        <i class="fab fa-discord"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div id="modal-register-form" class="p-8 hidden">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <label class="block text-gray-300 mb-2">Username</label>
+                        <input type="text" class="w-full px-4 py-3 rounded-md glow-input text-white focus:outline-none terminal-effect" placeholder="hacker123">
+                    </div>
+                    <div>
+                        <label class="block text-gray-300 mb-2">Email</label>
+                        <input type="email" class="w-full px-4 py-3 rounded-md glow-input text-white focus:outline-none terminal-effect" placeholder="you@domain.com">
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <label class="block text-gray-300 mb-2">Password</label>
+                        <input type="password" class="w-full px-4 py-3 rounded-md glow-input text-white focus:outline-none terminal-effect" placeholder="••••••••">
+                    </div>
+                    <div>
+                        <label class="block text-gray-300 mb-2">Confirm Password</label>
+                        <input type="password" class="w-full px-4 py-3 rounded-md glow-input text-white focus:outline-none terminal-effect" placeholder="••••••••">
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block text-gray-300 mb-2">Team Name (optional)</label>
+                    <input type="text" class="w-full px-4 py-3 rounded-md glow-input text-white focus:outline-none terminal-effect" placeholder="0xDEADBEEF">
+                </div>
+                
+                <div class="captcha-container mb-6">
+                    <div class="flex justify-between items-center mb-2">
+                        <label class="text-gray-300">Verify you're human:</label>
+                        <button class="text-blue-400 hover:underline text-sm">
+                            <i class="fas fa-sync-alt mr-1"></i> Refresh
+                        </button>
+                    </div>
+                    <div class="bg-black p-3 mb-2 text-center">
+                        <span class="captcha-text">7H4K3M3</span>
+                    </div>
+                    <input type="text" class="w-full px-4 py-2 rounded-md glow-input text-white focus:outline-none" placeholder="Enter CAPTCHA">
+                </div>
+                
+                <button class="w-full glow-red py-3 rounded-md bg-red-900/50 text-white font-bold hover:bg-red-800 transition-all">
+                    <i class="fas fa-user-shield mr-2"></i> Create Account
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- About the Event / Showcase Section -->
+    <section class="py-20 bg-gradient-to-b from-gray-900 to-black">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16 animate-fade-in">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4 text-blue-400">Challenge Categories</h2>
+                <p class="max-w-3xl mx-auto text-gray-300">
+                    Test your skills across multiple security domains. Each category presents unique challenges
+                    that will push your technical abilities to the limit.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+                <div class="bg-gray-900/50 border border-gray-800 rounded-xl p-8 challenge-card animate-slide-in-up delay-100 hover:border-blue-400">
+                    <div class="text-blue-400 text-4xl mb-4">
+                        <i class="fas fa-globe"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Web Exploitation</h3>
+                    <p class="text-gray-300">
+                        Exploit vulnerabilities in web applications including XSS, SQLi, CSRF, and more.
+                        Can you bypass security controls and gain unauthorized access?
+                    </p>
+                    <div class="mt-4 text-xs font-mono text-blue-400">
+                        <span class="typing-text typing-animation">$ curl -X POST vulnerable.site/api/admin</span>
+                    </div>
+                </div>
+                
+                <div class="bg-gray-900/50 border border-gray-800 rounded-xl p-8 challenge-card animate-slide-in-up delay-200 hover:border-blue-400">
+                    <div class="text-blue-400 text-4xl mb-4">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Cryptography</h3>
+                    <p class="text-gray-300">
+                        Break encryption schemes, analyze ciphertexts, and solve complex crypto puzzles.
+                        Can you crack the code and uncover hidden messages?
+                    </p>
+                    <div class="mt-4 text-xs font-mono text-blue-400">
+                        <span class="typing-text typing-animation">$ openssl aes-256-cbc -d -in flag.enc</span>
+                    </div>
+                </div>
+                
+                <div class="bg-gray-900/50 border border-gray-800 rounded-xl p-8 challenge-card animate-slide-in-up delay-300 hover:border-blue-400">
+                    <div class="text-blue-400 text-4xl mb-4">
+                        <i class="fas fa-bug"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Binary Exploitation</h3>
+                    <p class="text-gray-300">
+                        Find vulnerabilities in executable binaries and exploit them to gain control.
+                        Buffer overflows, ROP chains, and shellcode await.
+                    </p>
+                    <div class="mt-4 text-xs font-mono text-blue-400">
+                        <span class="typing-text typing-animation">(gdb) run $(python -c 'print "A"*256')</span>
+                    </div>
+                </div>
+                
+                <div class="bg-gray-900/50 border border-gray-800 rounded-xl p-8 challenge-card animate-slide-in-up delay-400 hover:border-blue-400">
+                    <div class="text-blue-400 text-4xl mb-4">
+                        <i class="fas fa-file-code"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Reverse Engineering</h3>
+                    <p class="text-gray-300">
+                        Analyze compiled programs without source code. Understand their behavior
+                        and extract hidden information.
+                    </p>
+                    <div class="mt-4 text-xs font-mono text-blue-400">
+                        <span class="typing-text typing-animation">$ r2 -AAA ./challenge</span>
+                    </div>
+                </div>
+                
+                <div class="bg-gray-900/50 border border-gray-800 rounded-xl p-8 challenge-card animate-slide-in-up delay-500 hover:border-blue-400">
+                    <div class="text-blue-400 text-4xl mb-4">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Forensics</h3>
+                    <p class="text-gray-300">
+                        Investigate digital artifacts, recover deleted files, analyze network traffic,
+                        and uncover hidden data.
+                    </p>
+                    <div class="mt-4 text-xs font-mono text-blue-400">
+                        <span class="typing-text typing-animation">$ binwalk -e suspicious.img</span>
+                    </div>
+                </div>
+                
+                <div class="bg-gray-900/50 border border-gray-800 rounded-xl p-8 challenge-card animate-slide-in-up delay-600 hover:border-blue-400">
+                    <div class="text-blue-400 text-4xl mb-4">
+                        <i class="fas fa-network-wired"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Miscellaneous</h3>
+                    <p class="text-gray-300">
+                        Unique challenges that don't fit other categories. OSINT, steganography,
+                        and other creative puzzles.
+                    </p>
+                    <div class="mt-4 text-xs font-mono text-blue-400">
+                        <span class="typing-text typing-animation">$ steghide extract -sf image.jpg</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="max-w-4xl mx-auto bg-gray-900/70 border border-gray-800 rounded-xl p-8 animate-fade-in">
+                <h3 class="text-xl font-bold mb-4 text-blue-400">Prizes & Rewards</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="border-l-4 border-yellow-400 pl-4">
+                        <h4 class="font-bold mb-2 flex items-center">
+                            <span class="rank-badge rank-1 mr-2">1</span> 1st Place
+                        </h4>
+                        <p class="text-gray-300">$5,000 + Exclusive Swag + Job Offers</p>
+                    </div>
+                    <div class="border-l-4 border-gray-400 pl-4">
+                        <h4 class="font-bold mb-2 flex items-center">
+                            <span class="rank-badge rank-2 mr-2">2</span> 2nd Place
+                        </h4>
+                        <p class="text-gray-300">$3,000 + Exclusive Swag</p>
+                    </div>
+                    <div class="border-l-4 border-amber-600 pl-4">
+                        <h4 class="font-bold mb-2 flex items-center">
+                            <span class="rank-badge rank-3 mr-2">3</span> 3rd Place
+                        </h4>
+                        <p class="text-gray-300">$1,000 + Exclusive Swag</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Leaderboard Preview -->
+    <section class="py-20 bg-black">
+        <div class="container mx-auto px-6 max-w-4xl">
+            <div class="flex justify-between items-center mb-8 animate-fade-in">
+                <h2 class="text-3xl font-bold text-blue-400">Live Leaderboard</h2>
+                <a href="#" class="text-gray-400 hover:text-blue-400">View Full Leaderboard <i class="fas fa-arrow-right ml-1"></i></a>
+            </div>
+            
+            <div class="bg-gray-900/70 border border-gray-800 rounded-xl overflow-hidden animate-slide-in-up">
+                <div class="grid grid-cols-12 bg-gray-800/50 p-4 font-bold text-blue-400">
+                    <div class="col-span-1">#</div>
+                    <div class="col-span-6">Team</div>
+                    <div class="col-span-3">Score</div>
+                    <div class="col-span-2">Solves</div>
+                </div>
+                
+                <div class="divide-y divide-gray-800">
+                    <div class="grid grid-cols-12 p-4 items-center leaderboard-item bg-gray-900/30">
+                        <div class="col-span-1 font-bold">
+                            <span class="rank-badge rank-1">1</span>
+                        </div>
+                        <div class="col-span-6 flex items-center">
+                            <div class="w-8 h-8 rounded-full bg-blue-900 flex items-center justify-center mr-3">
+                                <i class="fas fa-crown text-yellow-400"></i>
+                            </div>
+                            <span>0xDEADBEEF</span>
+                        </div>
+                        <div class="col-span-3">
+                            <div class="flex items-center">
+                                <span class="mr-2" id="score-1">0</span>
+                                <div class="flex-1 h-2 rounded-full bg-gray-800">
+                                    <div class="h-full progress-bar rounded-full" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-span-2" id="solves-1">0</div>
+                    </div>
+                    
+                    <div class="grid grid-cols-12 p-4 items-center leaderboard-item">
+                        <div class="col-span-1 font-bold">
+                            <span class="rank-badge rank-2">2</span>
+                        </div>
+                        <div class="col-span-6 flex items-center">
+                            <div class="w-8 h-8 rounded-full bg-blue-900 flex items-center justify-center mr-3">
+                                <i class="fas fa-user-secret"></i>
+                            </div>
+                            <span>Ghost Squad</span>
+                        </div>
+                        <div class="col-span-3">
+                            <div class="flex items-center">
+                                <span class="mr-2" id="score-2">0</span>
+                                <div class="flex-1 h-2 rounded-full bg-gray-800">
+                                    <div class="h-full progress-bar rounded-full" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-span-2" id="solves-2">0</div>
+                    </div>
+                    
+                    <div class="grid grid-cols-12 p-4 items-center leaderboard-item">
+                        <div class="col-span-1 font-bold">
+                            <span class="rank-badge rank-3">3</span>
+                        </div>
+                        <div class="col-span-6 flex items-center">
+                            <div class="w-8 h-8 rounded-full bg-blue-900 flex items-center justify-center mr-3">
+                                <i class="fas fa-user-ninja"></i>
+                            </div>
+                            <span>Binary Bandits</span>
+                        </div>
+                        <div class="col-span-3">
+                            <div class="flex items-center">
+                                <span class="mr-2" id="score-3">0</span>
+                                <div class="flex-1 h-2 rounded-full bg-gray-800">
+                                    <div class="h-full progress-bar rounded-full" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-span-2" id="solves-3">0</div>
+                    </div>
+                    
+                    <div class="grid grid-cols-12 p-4 items-center leaderboard-item">
+                        <div class="col-span-1 font-bold">
+                            <span class="rank-badge rank-4">4</span>
+                        </div>
+                        <div class="col-span-6 flex items-center">
+                            <div class="w-8 h-8 rounded-full bg-blue-900 flex items-center justify-center mr-3">
+                                <i class="fas fa-skull"></i>
+                            </div>
+                            <span>Stack Smashers</span>
+                        </div>
+                        <div class="col-span-3">
+                            <div class="flex items-center">
+                                <span class="mr-2" id="score-4">0</span>
+                                <div class="flex-1 h-2 rounded-full bg-gray-800">
+                                    <div class="h-full progress-bar rounded-full" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-span-2" id="solves-4">0</div>
+                    </div>
+                    
+                    <div class="grid grid-cols-12 p-4 items-center leaderboard-item">
+                        <div class="col-span-1 font-bold">
+                            <span class="rank-badge rank-5">5</span>
+                        </div>
+                        <div class="col-span-6 flex items-center">
+                            <div class="w-8 h-8 rounded-full bg-blue-900 flex items-center justify-center mr-3">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <span>Shell Shockers</span>
+                        </div>
+                        <div class="col-span-3">
+                            <div class="flex items-center">
+                                <span class="mr-2" id="score-5">0</span>
+                                <div class="flex-1 h-2 rounded-full bg-gray-800">
+                                    <div class="h-full progress-bar rounded-full" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-span-2" id="solves-5">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Announcements Feed -->
+    <section class="py-12 bg-gradient-to-b from-gray-900 to-black">
+        <div class="container mx-auto px-6 max-w-4xl animate-fade-in">
+            <h2 class="text-3xl font-bold mb-6 text-blue-400">Latest Announcements</h2>
+            
+            <div class="announcement-feed rounded-lg font-mono">
+                <div class="announcement-item">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="text-blue-400">[ADMIN]</span>
+                            <span class="text-white ml-2">Registration is now open for all participants</span>
+                        </div>
+                        <span class="text-gray-500 text-sm">10:42:05</span>
+                    </div>
+                </div>
+                <div class="announcement-item">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="text-red-400">[ALERT]</span>
+                            <span class="text-white ml-2">Web-100 challenge has been updated. Please refresh.</span>
+                        </div>
+                        <span class="text-gray-500 text-sm">09:15:33</span>
+                    </div>
+                </div>
+                <div class="announcement-item">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="text-green-400">[UPDATE]</span>
+                            <span class="text-white ml-2">New prizes added to the pool. Check the rules section.</span>
+                        </div>
+                        <span class="text-gray-500 text-sm">Yesterday</span>
+                    </div>
+                </div>
+                <div class="announcement-item">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="text-purple-400">[EVENT]</span>
+                            <span class="text-white ml-2">Live workshop on binary exploitation at 14:00 UTC</span>
+                        </div>
+                        <span class="text-gray-500 text-sm">2 days ago</span>
+                    </div>
+                </div>
+                <div class="announcement-item">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="text-yellow-400">[NOTICE]</span>
+                            <span class="text-white ml-2">Discord server is now open for all participants</span>
+                        </div>
+                        <span class="text-gray-500 text-sm">3 days ago</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-20 bg-gradient-to-b from-black to-gray-900">
+        <div class="container mx-auto px-6 text-center">
+            <h2 class="text-3xl md:text-4xl font-bold mb-6 text-blue-400 animate-fade-in">Competition Starts In</h2>
+            
+            <div class="flex justify-center gap-4 mb-10 animate-slide-in-up">
+                <div class="countdown-digit w-24 h-24 flex flex-col items-center justify-center rounded-lg">
+                    <span id="days" class="text-4xl font-bold">00</span>
+                    <span class="text-sm text-gray-400">DAYS</span>
+                </div>
+                <div class="countdown-digit w-24 h-24 flex flex-col items-center justify-center rounded-lg">
+                    <span id="hours" class="text-4xl font-bold">00</span>
+                    <span class="text-sm text-gray-400">HOURS</span>
+                </div>
+                <div class="countdown-digit w-24 h-24 flex flex-col items-center justify-center rounded-lg">
+                    <span id="minutes" class="text-4xl font-bold">00</span>
+                    <span class="text-sm text-gray-400">MINUTES</span>
+                </div>
+                <div class="countdown-digit w-24 h-24 flex flex-col items-center justify-center rounded-lg">
+                    <span id="seconds" class="text-4xl font-bold">00</span>
+                    <span class="text-sm text-gray-400">SECONDS</span>
+                </div>
+            </div>
+            
+            <div class="animate-fade-in delay-300">
+                <button class="glow-blue px-8 py-4 rounded-md bg-blue-900/50 text-white font-bold hover:bg-blue-800 transition-all text-xl mr-4">
+                    <i class="fas fa-calendar-check mr-2"></i> Add to Calendar
+                </button>
+                <button class="border border-blue-400 px-8 py-4 rounded-md text-blue-400 font-bold hover:bg-blue-900/30 transition-all text-xl">
+                    <i class="fas fa-question-circle mr-2"></i> FAQ
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-black py-12 border-t border-gray-800">
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4 text-blue-400">CyberHack CTF</h3>
+                    <p class="text-gray-400 mb-4">
+                        The premier ethical hacking competition for security enthusiasts and professionals.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="social-icon text-gray-400 hover:text-blue-400">
+                            <i class="fab fa-discord fa-lg"></i>
+                        </a>
+                        <a href="#" class="social-icon text-gray-400 hover:text-blue-400">
+                            <i class="fab fa-twitter fa-lg"></i>
+                        </a>
+                        <a href="#" class="social-icon text-gray-400 hover:text-blue-400">
+                            <i class="fab fa-github fa-lg"></i>
+                        </a>
+                        <a href="#" class="social-icon text-gray-400 hover:text-blue-400">
+                            <i class="fab fa-youtube fa-lg"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold mb-4 text-gray-300">Competition</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-blue-400">Rules</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-blue-400">Challenges</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-blue-400">Leaderboard</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-blue-400">Prizes</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold mb-4 text-gray-300">Resources</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-blue-400">Getting Started</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-blue-400">Tools & Tutorials</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-blue-400">Previous CTFs</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-blue-400">Writeups</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold mb-4 text-gray-300">Contact</h4>
+                    <ul class="space-y-2">
+                        <li>
+                            <a href="mailto:contact@cyberhack-ctf.com" class="text-gray-400 hover:text-blue-400">
+                                <i class="fas fa-envelope mr-2"></i> contact@cyberhack-ctf.com
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="text-gray-400 hover:text-blue-400">
+                                <i class="fas fa-comment-alt mr-2"></i> Live Chat
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="text-gray-400 hover:text-blue-400">
+                                <i class="fas fa-file-alt mr-2"></i> Sponsorship
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="text-gray-400 hover:text-blue-400">
+                                <i class="fas fa-question-circle mr-2"></i> Support
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-gray-500 mb-4 md:mb-0">© 2023 CyberHack CTF. All rights reserved.</p>
+                <div class="flex space-x-6">
+                    <a href="#" class="text-gray-500 hover:text-blue-400">Privacy Policy</a>
+                    <a href="#" class="text-gray-500 hover:text-blue-400">Terms of Service</a>
+                    <a href="#" class="text-gray-500 hover:text-blue-400">Code of Conduct</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const authModal = document.getElementById('auth-modal');
+        const loginBtn = document.getElementById('login-btn');
+        const registerBtn = document.getElementById('register-btn');
+        const closeModal = document.getElementById('close-modal');
+        const modalLoginTab = document.getElementById('modal-login-tab');
+        const modalRegisterTab = document.getElementById('modal-register-tab');
+        const modalLoginForm = document.getElementById('modal-login-form');
+        const modalRegisterForm = document.getElementById('modal-register-form');
+        
+        loginBtn.addEventListener('click', () => {
+            authModal.classList.add('active');
+            modalLoginForm.classList.remove('hidden');
+            modalRegisterForm.classList.add('hidden');
+            modalLoginTab.classList.add('text-blue-400', 'border-b-2', 'border-blue-400');
+            modalRegisterTab.classList.remove('text-blue-400', 'border-b-2', 'border-blue-400');
+            modalRegisterTab.classList.add('text-gray-400');
+        });
+        
+        registerBtn.addEventListener('click', () => {
+            authModal.classList.add('active');
+            modalRegisterForm.classList.remove('hidden');
+            modalLoginForm.classList.add('hidden');
+            modalRegisterTab.classList.add('text-blue-400', 'border-b-2', 'border-blue-400');
+            modalLoginTab.classList.remove('text-blue-400', 'border-b-2', 'border-blue-400');
+            modalLoginTab.classList.add('text-gray-400');
+        });
+        
+        closeModal.addEventListener('click', () => {
+            authModal.classList.remove('active');
+        });
+        
+        modalLoginTab.addEventListener('click', () => {
+            modalLoginForm.classList.remove('hidden');
+            modalRegisterForm.classList.add('hidden');
+            modalLoginTab.classList.add('text-blue-400', 'border-b-2', 'border-blue-400');
+            modalRegisterTab.classList.remove('text-blue-400', 'border-b-2', 'border-blue-400');
+            modalRegisterTab.classList.add('text-gray-400');
+        });
+        
+        modalRegisterTab.addEventListener('click', () => {
+            modalRegisterForm.classList.remove('hidden');
+            modalLoginForm.classList.add('hidden');
+            modalRegisterTab.classList.add('text-blue-400', 'border-b-2', 'border-blue-400');
+            modalLoginTab.classList.remove('text-blue-400', 'border-b-2', 'border-blue-400');
+            modalLoginTab.classList.add('text-gray-400');
+        });
+        const enable2fa = document.getElementById('enable-2fa');
+        const twoFaFields = document.getElementById('two-fa-fields');
+        
+        enable2fa.addEventListener('change', () => {
+            if (enable2fa.checked) {
+                twoFaFields.classList.remove('hidden');
+            } else {
+                twoFaFields.classList.add('hidden');
+            }
+        });
+        
+        function updateCountdown() {
+            const now = new Date();
+            const eventDate = new Date();
+            eventDate.setDate(now.getDate() + 7); // Set to 7 days from now for demo
+            
+            const diff = eventDate - now;
+            
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            
+            document.getElementById('days').textContent = days.toString().padStart(2, '0');
+            document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
+            document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
+            document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
+            
+            if (seconds !== parseInt(document.getElementById('seconds').dataset.prev || -1)) {
+                const secondsEl = document.getElementById('seconds');
+                secondsEl.classList.add('glitch');
+                setTimeout(() => {
+                    secondsEl.classList.remove('glitch');
+                }, 500);
+            }
+            document.getElementById('seconds').dataset.prev = seconds;
+        }
+        
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+        
+        function animateValue(id, start, end, duration) {
+            const obj = document.getElementById(id);
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                const value = Math.floor(progress * (end - start) + start);
+                obj.innerHTML = value;
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+            
+            const progressBar = obj.parentElement.nextElementSibling.querySelector('.progress-bar');
+            if (progressBar) {
+                const percentage = (end / 10000) * 100;
+                progressBar.style.width = `${percentage}%`;
+            }
+        }
+        
+        function startAnimations() {
+            const leaderboard = document.querySelector('.leaderboard-item');
+            const rect = leaderboard.getBoundingClientRect();
+            const isVisible = (rect.top <= window.innerHeight) && (rect.bottom >= 0);
+            
+            if (isVisible && !leaderboard.dataset.animated) {
+                leaderboard.dataset.animated = true;
+                
+                animateValue('score-1', 0, 9850, 2000);
+                animateValue('solves-1', 0, 42, 2000);
+                animateValue('score-2', 0, 8765, 2000);
+                animateValue('solves-2', 0, 38, 2000);
+                animateValue('score-3', 0, 7654, 2000);
+                animateValue('solves-3', 0, 35, 2000);
+                animateValue('score-4', 0, 6543, 2000);
+                animateValue('solves-4', 0, 30, 2000);
+                animateValue('score-5', 0, 5432, 2000);
+                animateValue('solves-5', 0, 28, 2000);
+            }
+        }
+        
+        window.addEventListener('scroll', startAnimations);
+        window.addEventListener('load', startAnimations);
+        
+        const inputs = document.querySelectorAll('.terminal-effect');
+        inputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.querySelector('label').classList.add('text-blue-400');
+            });
+            
+            input.addEventListener('blur', function() {
+                if (!this.value) {
+                    this.parentElement.querySelector('label').classList.remove('text-blue-400');
+                }
+            });
+        });
+        const animateElements = document.querySelectorAll('.animate-slide-in-up, .animate-fade-in');
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, {
+            threshold: 0.1
+        });
+        
+        animateElements.forEach(element => {
+            observer.observe(element);
+        });
+
+//DAGI-MAKES STUFF
+    </script>
+</body>
+</html>
